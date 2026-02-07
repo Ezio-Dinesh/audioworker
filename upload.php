@@ -1,54 +1,64 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 header("Content-Type: application/json");
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
 
-// ===========================
-// CONFIG
-// ===========================
-$uploadDir = __DIR__ . "/storage/input";
+$targetDir = __DIR__ . "/storage/input/";
+$targetFile = $targetDir . "audio.mp3";
 
-// ===========================
-// CHECK FILE
-// ===========================
-if (!isset($_FILES['audio'])) {
-    http_response_code(400);
+// Debug: dump request method + headers
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
-        "message" => "No file received"
+        "message" => "POST required",
+        "method" => $_SERVER['REQUEST_METHOD']
     ]);
     exit;
 }
 
-// ===========================
-// ENSURE DIRECTORY EXISTS
-// ===========================
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0777, true);
-}
-
-// ===========================
-// MOVE FILE
-// ===========================
-$filename = "audio.mp3";
-$target   = $uploadDir . "/" . $filename;
-
-if (!move_uploaded_file($_FILES['audio']['tmp_name'], $target)) {
+// Debug: check $_FILES
+if (!isset($_FILES['audio'])) {
     http_response_code(500);
     echo json_encode([
         "status" => "error",
-        "message" => "Upload failed",
-        "tmp" => $_FILES['audio']['tmp_name'],
-        "target" => $target
+        "message" => "No file received",
+        "_FILES" => $_FILES,
+        "_POST" => $_POST,
+        "headers" => getallheaders()
     ]);
     exit;
 }
 
-// ===========================
-// SUCCESS
-// ===========================
+// Debug: validate upload
+if ($_FILES['audio']['error'] !== UPLOAD_ERR_OK) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => "Upload error",
+        "error_code" => $_FILES['audio']['error']
+    ]);
+    exit;
+}
+
+if (!is_dir($targetDir)) {
+    mkdir($targetDir, 0777, true);
+}
+
+if (!move_uploaded_file($_FILES['audio']['tmp_name'], $targetFile)) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "message" => "move_uploaded_file failed",
+        "tmp" => $_FILES['audio']['tmp_name'],
+        "target" => $targetFile,
+        "writable" => is_writable($targetDir)
+    ]);
+    exit;
+}
+
 echo json_encode([
     "status" => "uploaded",
-    "path" => $target
+    "path" => $targetFile,
+    "size" => $_FILES['audio']['size']
 ]);
