@@ -1,16 +1,25 @@
 FROM php:8.2-cli
 
-# Install FFmpeg
-RUN apt-get update && apt-get install -y ffmpeg \
+# Install FFmpeg + tools
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    git \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+# PHP upload limits (CRITICAL FIX)
+RUN echo "upload_max_filesize=200M" > /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "post_max_size=200M" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "memory_limit=512M" >> /usr/local/etc/php/conf.d/uploads.ini \
+ && echo "max_execution_time=0" >> /usr/local/etc/php/conf.d/uploads.ini
 
 WORKDIR /app
 
-# Copy app files
-COPY . /app
+COPY process.php /app/process.php
+COPY upload.php /app/upload.php
 
-# Permissions
-RUN chmod -R 777 /app/storage
+RUN mkdir -p /app/storage/input /app/storage/output /app/storage/tmp \
+    && chmod -R 777 /app/storage
 
 EXPOSE 8000
 
