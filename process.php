@@ -92,19 +92,21 @@ $tmpFiles = [];
 $i = 0;
 
 foreach ($segments as $seg) {
-   $tmp = "$base/storage/tmp_{$uniq}_$i.wav";
+   $tmp = "$base/storage/tmp_{$uniq}_$i.mp3";
 
 
     if ($seg['type'] === "audio") {
-        $cmd = "ffmpeg -y -i ".escapeshellarg($inputFile).
-               " -ss {$seg['start']} ".
-               ($seg['duration'] ? "-t {$seg['duration']} " : "").
-               "-ac 2 -ar 44100 ".
-               escapeshellarg($tmp)." 2>&1";
+       $cmd = "ffmpeg -y -i ".escapeshellarg($inputFile).
+       " -ss {$seg['start']} ".
+       ($seg['duration'] ? "-t {$seg['duration']} " : "").
+       "-vn -c:a libmp3lame -b:a 128k ".
+       escapeshellarg($tmp)." 2>&1";
+
     } else {
-        $cmd = "ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=stereo ".
-               "-t {$seg['duration']} ".
-               escapeshellarg($tmp)." 2>&1";
+     $cmd = "ffmpeg -y -f lavfi -i anullsrc=r=44100:cl=stereo ".
+       "-t {$seg['duration']} -c:a libmp3lame -b:a 128k ".
+       escapeshellarg($tmp)." 2>&1";
+
     }
 
     exec($cmd, $out, $ret);
@@ -134,8 +136,9 @@ foreach ($tmpFiles as $f) {
 
 $cmd = "ffmpeg -y -f concat -safe 0 -i ".
        escapeshellarg($listFile).
-       " -ac 2 -ar 44100 -codec:a libmp3lame -b:a 192k ".
+       " -c:a libmp3lame -b:a 128k ".
        escapeshellarg($outputFile)." 2>&1";
+
 
 exec($cmd, $out, $ret);
 if ($ret !== 0) {
