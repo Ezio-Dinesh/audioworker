@@ -24,7 +24,9 @@ $userSilenceSeconds = $minutes * 60;
 // ------------------------------------
 $base = __DIR__;
 $inputFile  = $base . "/storage/input/audio.mp3";
-$outputFile = $base . "/storage/output/final_output.mp3";
+$uniq = time() . "_" . mt_rand(1000,9999);
+$outputFile = __DIR__ . "/storage/output/final_output_$uniq.mp3";
+
 
 // ------------------------------------
 // BREAKPOINTS
@@ -90,7 +92,8 @@ $tmpFiles = [];
 $i = 0;
 
 foreach ($segments as $seg) {
-    $tmp = "$base/storage/tmp/tmp_$i.wav";
+   $tmp = "$base/storage/tmp_{$uniq}_$i.wav";
+
 
     if ($seg['type'] === "audio") {
         $cmd = "ffmpeg -y -i ".escapeshellarg($inputFile).
