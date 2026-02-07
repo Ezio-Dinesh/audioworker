@@ -17,6 +17,7 @@ WORKDIR /app
 
 COPY process.php /app/process.php
 COPY upload.php /app/upload.php
+COPY deletes.php /app/deletes.php
 
 RUN mkdir -p /app/storage/input /app/storage/output /app/storage/tmp \
     && chmod -R 777 /app/storage
