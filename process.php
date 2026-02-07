@@ -161,5 +161,7 @@ echo json_encode([
     "status" => "success",
     "minutes_used" => $minutes,
     "silence_seconds" => $userSilenceSeconds,
-    "output" => "/storage/output/final_output.mp3"
+    "output" => basename($outputFile)
+
+
 ]);
