@@ -1,7 +1,6 @@
 <?php
 header("Content-Type: application/json");
 
-// Output directory
 $dir = __DIR__ . "/storage/output";
 
 
