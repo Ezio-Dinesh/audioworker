@@ -134,7 +134,8 @@ foreach ($segments as $seg) {
 
     }
 
-    exec($cmd, $out, $ret);
+   exec($cmd . " > /dev/null 2>&1 &");
+
     if ($ret !== 0) {
         http_response_code(500);
         echo json_encode([
