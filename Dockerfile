@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     && rm -rf /var/lib/apt/lists/*
-
+RUN sed -i 's|listen = .*|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf
 # PHP limits
 RUN echo "upload_max_filesize=200M" > /usr/local/etc/php/conf.d/uploads.ini \
  && echo "post_max_size=200M" >> /usr/local/etc/php/conf.d/uploads.ini \
