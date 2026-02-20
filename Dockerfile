@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Make FPM listen on TCP (required for Coolify)
-RUN sed -i 's|listen = .*|listen = 9000|' /usr/local/etc/php-fpm.d/www.conf \
+RUN sed -i 's|listen = .*|listen = 0.0.0.0:8000|' /usr/local/etc/php-fpm.d/www.conf \
  && sed -i 's|;listen.mode = 0660|listen.mode = 0666|' /usr/local/etc/php-fpm.d/www.conf
 
 # PHP limits
@@ -25,6 +25,6 @@ COPY deletes.php .
 RUN mkdir -p storage/input storage/output storage/tmp \
  && chmod -R 777 storage
 
-EXPOSE 9000
+EXPOSE 8000
 
 CMD ["php-fpm"]
