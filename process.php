@@ -4,6 +4,28 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 set_time_limit(0);
 
+
+if (isset($_GET['download'])) {
+
+    $file = __DIR__ . "/storage/output/" . basename($_GET['download']);
+
+    if (file_exists($file)) {
+
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=\"" . basename($file) . "\"");
+        header("Content-Length: " . filesize($file));
+
+        readfile($file);
+        exit;
+    } else {
+        http_response_code(404);
+        echo "File not found";
+        exit;
+    }
+}
+
+
 // ------------------------------------
 // INPUT (FROM OTHER APPLICATIONS)
 // ------------------------------------
@@ -167,7 +189,8 @@ echo json_encode([
     "status" => "success",
     "minutes_used" => $minutes,
     "silence_seconds" => $userSilenceSeconds,
-    "output" => basename($outputFile)
+    "file_url" => "process.php?download=" . basename($outputFile)
+
 
 
 ]);
