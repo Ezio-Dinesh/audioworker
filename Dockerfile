@@ -23,4 +23,4 @@ COPY deletes.php /app/deletes.php
 RUN mkdir -p storage/input storage/output storage/tmp \
  && chmod -R 777 storage
 
-EXPOSE 8000
+EXPOSE 9000
